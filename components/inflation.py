@@ -1,11 +1,5 @@
 """
-components/inflation.py — Inflation & Policy, or:
-The Slow Unwinding of What a Dollar Meant.
-
-The Fed sets a target of 2%.  This is the official story.
-The chart below shows what actually happened.
-
-"Entropy is the figure of Death."
+components/inflation.py — Inflation Monitor & Fed Funds Rate.
 """
 
 from __future__ import annotations
@@ -16,20 +10,13 @@ from plotly.subplots import make_subplots
 
 from config import (
     PLOTLY_TEMPLATE, COLORS, RECESSION_FILL_COLOR,
-    BG_PRIMARY, BG_SECONDARY, GRID_COLOR, TEXT_PRIMARY, TEXT_ACCENT,
+    BG_SECONDARY, GRID_COLOR, TEXT_PRIMARY, TEXT_SECONDARY,
 )
 from transforms import recession_periods, yoy_pct_change
 
-_FONT = dict(
-    family="'EB Garamond', Georgia, serif",
-    color=TEXT_PRIMARY,
-    size=13,
-)
-_HOVERLABEL = dict(
-    bgcolor="#141425",
-    font=dict(family="'JetBrains Mono', monospace", color=TEXT_PRIMARY, size=11),
-    bordercolor="rgba(200, 168, 78, 0.3)",
-)
+_FONT = dict(family="Inter, -apple-system, sans-serif", color=TEXT_PRIMARY, size=12)
+_TITLE_FONT = dict(family="Inter, sans-serif", color=TEXT_PRIMARY, size=15, weight=600)
+_HOVERLABEL = dict(bgcolor="#ffffff", font_color=TEXT_PRIMARY, bordercolor="#eaedf0")
 
 
 def inflation_policy_figure(
@@ -45,11 +32,8 @@ def inflation_policy_figure(
 
     fig = make_subplots(
         rows=2, cols=1,
-        subplot_titles=[
-            "<i>Three Measures of Erosion</i>",
-            "<i>The Rate at Which They Respond</i>",
-        ],
-        vertical_spacing=0.14,
+        subplot_titles=["Inflation — Year-over-Year %", "Effective Federal Funds Rate"],
+        vertical_spacing=0.13,
         row_heights=[0.55, 0.45],
     )
 
@@ -64,86 +48,63 @@ def inflation_policy_figure(
                 row=row, col=1,
             )
 
-    # --- Inflation (row 1) ---
     for series, name, color in [
-        (cpi_yoy,  "CPI YoY%",      COLORS[2]),   # terracotta — erosion
-        (core_yoy, "Core CPI YoY%", COLORS[0]),    # gold — the official version
-        (pce_yoy,  "PCE YoY%",      COLORS[1]),    # green — the Fed's preferred lie
+        (cpi_yoy,  "CPI YoY%",      COLORS[2]),
+        (core_yoy, "Core CPI YoY%", COLORS[0]),
+        (pce_yoy,  "PCE YoY%",      COLORS[1]),
     ]:
         if series.empty:
             continue
-        # Ghost
-        fig.add_trace(go.Scatter(
-            x=series.index, y=series.values,
-            mode="lines", line=dict(color=color, width=6),
-            opacity=0.06, showlegend=False, hoverinfo="skip",
-        ), row=1, col=1)
-        # Signal
         fig.add_trace(go.Scatter(
             x=series.index, y=series.values,
             mode="lines", name=name,
-            line=dict(color=color, width=1.5),
+            line=dict(color=color, width=1.8),
         ), row=1, col=1)
 
-    # The target — a line drawn by committee, held sacred
+    # 2% target
     fig.add_hline(
-        y=2.0, line_dash="dot", line_color="rgba(200, 168, 78, 0.5)", line_width=1,
-        annotation_text="the 2% doctrine",
-        annotation_font=dict(
-            family="'EB Garamond', serif", color="rgba(200, 168, 78, 0.6)",
-            size=10,
-        ),
+        y=2.0, line_dash="dash", line_color="#d0d3d8", line_width=1,
+        annotation_text="2% target",
+        annotation_font=dict(size=10, color=TEXT_SECONDARY),
         annotation_position="bottom right",
         row=1, col=1,
     )
     _shade(1)
 
-    # --- Fed Funds (row 2) ---
     if not fedfunds.empty:
-        # Ghost
-        fig.add_trace(go.Scatter(
-            x=fedfunds.index, y=fedfunds.values,
-            mode="lines", line=dict(color=COLORS[5], width=7, shape="hv"),
-            opacity=0.07, showlegend=False, hoverinfo="skip",
-        ), row=2, col=1)
-        # The staircase — each step a meeting, a vote, a press conference
         fig.add_trace(go.Scatter(
             x=fedfunds.index, y=fedfunds.values,
             mode="lines", name="Fed Funds Rate",
-            line=dict(color=COLORS[5], width=2, shape="hv"),
+            line=dict(color=COLORS[6], width=2, shape="hv"),
         ), row=2, col=1)
     _shade(2)
 
     fig.update_layout(
         template=PLOTLY_TEMPLATE,
         paper_bgcolor=BG_SECONDARY,
-        plot_bgcolor=BG_PRIMARY,
+        plot_bgcolor=BG_SECONDARY,
         font=_FONT,
         hoverlabel=_HOVERLABEL,
-        title=dict(
-            text="<i>The Entropy of Purchasing Power</i>",
-            font=dict(family="'EB Garamond', serif", color=TEXT_ACCENT, size=18),
-        ),
-        height=750,
-        margin=dict(t=100, b=50, l=60, r=30),
+        title=dict(text="Inflation & Monetary Policy", font=_TITLE_FONT, x=0, xanchor="left"),
+        height=700,
+        margin=dict(t=80, b=45, l=55, r=25),
         hovermode="x unified",
         legend=dict(
-            orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
-            bgcolor="rgba(0,0,0,0)",
-            font=dict(family="'EB Garamond', serif", size=12),
+            orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0,
+            bgcolor="rgba(0,0,0,0)", font=dict(size=11, color=TEXT_SECONDARY),
         ),
     )
 
     for suffix in ["", "2"]:
         fig.update_layout(**{
-            f"xaxis{suffix}": dict(gridcolor=GRID_COLOR),
-            f"yaxis{suffix}": dict(gridcolor=GRID_COLOR),
+            f"xaxis{suffix}": dict(gridcolor=GRID_COLOR, linecolor="#eaedf0"),
+            f"yaxis{suffix}": dict(gridcolor=GRID_COLOR, linecolor="#eaedf0"),
         })
 
     fig.update_yaxes(title_text="YoY %", row=1, col=1)
     fig.update_yaxes(title_text="Rate (%)", row=2, col=1)
 
     for ann in fig.layout.annotations:
-        ann.font = dict(family="'EB Garamond', serif", color=TEXT_ACCENT, size=12)
+        ann.font = dict(family="Inter, sans-serif", color=TEXT_SECONDARY, size=12, weight=500)
 
     return fig

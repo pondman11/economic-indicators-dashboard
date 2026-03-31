@@ -1,10 +1,7 @@
 """
-app.py — The Pynchon Terminal.
+app.py — Economic Indicators & Yield Curve Dashboard.
 
-A dashboard for those who suspect the numbers mean something else entirely.
-
-"The act of metaphor then was a thrust at truth and a lie,
- depending where you were: inside, safe, or outside, lost."
+Clean, minimal, fast.
 """
 
 from __future__ import annotations
@@ -22,12 +19,9 @@ from config import (
     YIELD_CURVE_SERIES,
     SPREAD_SERIES,
     RECESSION_SERIES,
-    MATURITY_ORDER,
     BG_PRIMARY,
     BG_SECONDARY,
-    TEXT_ACCENT,
     TEXT_SECONDARY,
-    EPIGRAPHS,
 )
 from fred_client import get_series_safe, get_multiple, get_failures
 from transforms import build_yield_curve_df, yield_curve_snapshot
@@ -40,12 +34,12 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# App initialisation
+# App
 # ---------------------------------------------------------------------------
 app = dash.Dash(
     __name__,
-    external_stylesheets=[dbc.themes.DARKLY],
-    title="The Pynchon Terminal — Economic Indicators",
+    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    title="Economic Indicators Dashboard",
     suppress_callback_exceptions=True,
     meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"},
@@ -54,7 +48,7 @@ app = dash.Dash(
 server = app.server
 
 # ---------------------------------------------------------------------------
-# Data — loaded once, cached, failures tolerated
+# Data
 # ---------------------------------------------------------------------------
 DATA_ERROR: str | None = None
 
@@ -78,12 +72,10 @@ def _load_data() -> None:
 
     if not FRED_API_KEY:
         DATA_ERROR = (
-            "The key is missing.\n\n"
-            "Without FRED_API_KEY, the terminal remains dark.\n\n"
-            "  1. https://fred.stlouisfed.org/docs/api/api_key.html\n"
-            "  2. Add to .env: FRED_API_KEY=your_key_here\n"
-            "  3. Restart.\n\n"
-            "\"They can get you asking the wrong questions...\""
+            "FRED_API_KEY is not set.\n\n"
+            "1. Get a free key → https://fred.stlouisfed.org/docs/api/api_key.html\n"
+            "2. Add to .env: FRED_API_KEY=your_key_here\n"
+            "3. Restart the app."
         )
         return
 
@@ -107,45 +99,41 @@ def _load_data() -> None:
 
     failures = get_failures()
     if failures:
-        logger.warning("Missing signals: %s", list(failures.keys()))
+        logger.warning("Some series unavailable: %s", list(failures.keys()))
 
 
 _load_data()
 
 # ---------------------------------------------------------------------------
-# Historical overlays
+# Historical overlay options — just three clean choices
 # ---------------------------------------------------------------------------
-HISTORICAL_OFFSETS = {
-    "6 Months Ago": timedelta(days=182),
-    "1 Year Ago": timedelta(days=365),
-    "2 Years Ago": timedelta(days=730),
-    "5 Years Ago": timedelta(days=1825),
+HISTORICAL_OPTIONS = [
+    {"label": "Current only", "value": "none"},
+    {"label": "vs 1 Year Ago", "value": "1y"},
+    {"label": "vs 2 Years Ago", "value": "2y"},
+    {"label": "vs 5 Years Ago", "value": "5y"},
+]
+
+OFFSET_MAP = {
+    "1y": ("1 Year Ago", timedelta(days=365)),
+    "2y": ("2 Years Ago", timedelta(days=730)),
+    "5y": ("5 Years Ago", timedelta(days=1825)),
 }
 
 
 # ---------------------------------------------------------------------------
-# Layout helpers
+# Layout
 # ---------------------------------------------------------------------------
-
-def _epigraph(key: str) -> html.Div:
-    """A literary aside before each tab's content."""
-    quote, attribution = EPIGRAPHS.get(key, ("", ""))
-    return html.Div([
-        html.Span(quote),
-        html.Span(attribution, className="attribution"),
-    ], className="epigraph")
-
 
 def _failure_banner() -> html.Div | None:
     failures = get_failures()
     if not failures:
         return None
-    series_list = ", ".join(failures.keys())
     return dbc.Alert(
-        f"Some signals lost in transit: {series_list}. "
-        "The remaining instruments are still reporting. Restart to retry.",
+        f"Some FRED series unavailable: {', '.join(failures.keys())}. "
+        "Charts render with available data. Restart to retry.",
         color="warning",
-        className="m-3 mb-0",
+        className="mx-4 mt-3 mb-0",
         dismissable=True,
     )
 
@@ -153,37 +141,23 @@ def _failure_banner() -> html.Div | None:
 def _header() -> html.Div:
     failures = get_failures()
     status_class = "status-dot" if not failures else "status-dot warn"
-    status_text = "ALL CHANNELS OPEN" if not failures else f"{len(failures)} CHANNELS DARK"
+    status_text = "All feeds live" if not failures else f"{len(failures)} feeds unavailable"
 
     return html.Div([
         html.Div([
-            html.H1("The Pynchon Terminal"),
+            html.H1("Economic Indicators & Yield Curve"),
             html.Div(
-                "Federal Reserve Economic Data · Treasury · Spreads · Macro · Policy · "
-                f"Lookback: 10Y · Updated: {date.today().isoformat()}",
+                f"FRED data · 10-year lookback · Updated {date.today().strftime('%b %d, %Y')}",
                 className="subtitle",
             ),
         ], className="dashboard-header"),
         html.Div([
             html.Div([
                 html.Span(className=status_class),
-                html.Span(f"FRED: {status_text}"),
-            ], className="status-item"),
-            html.Div([
-                html.Span(className="status-dot"),
-                html.Span("PATTERN RECOGNITION: ACTIVE"),
+                html.Span(status_text),
             ], className="status-item"),
         ], className="status-bar"),
     ])
-
-
-def _footnote() -> html.Div:
-    return html.Div(
-        "Under the paving stones, the data. — "
-        "Constructed with instruments from the Federal Reserve Bank of St. Louis. "
-        "Any resemblance to a functioning economy is purely coincidental.",
-        className="footnote",
-    )
 
 
 def _build_layout() -> html.Div:
@@ -201,14 +175,18 @@ def _build_layout() -> html.Div:
         _failure_banner(),
 
         dbc.Tabs(id="main-tabs", active_tab="tab-yc", children=[
-            dbc.Tab(label="The Yield Curve", tab_id="tab-yc"),
+            dbc.Tab(label="Yield Curve", tab_id="tab-yc"),
             dbc.Tab(label="Spreads & Recession", tab_id="tab-spreads"),
             dbc.Tab(label="Leading Indicators", tab_id="tab-indicators"),
             dbc.Tab(label="Inflation & Policy", tab_id="tab-inflation"),
         ]),
 
         html.Div(id="tab-content", className="tab-content-area"),
-        _footnote(),
+
+        html.Div(
+            "Data from Federal Reserve Bank of St. Louis (FRED)",
+            className="footer-note",
+        ),
     ], style={"backgroundColor": BG_PRIMARY, "minHeight": "100vh"})
 
 
@@ -238,95 +216,75 @@ def render_tab(active_tab: str):
             return _inflation_tab()
     except Exception as exc:
         logger.exception("Tab render error")
-        return dbc.Alert(
-            f"A signal was lost: {exc}",
-            color="danger",
-        )
+        return dbc.Alert(f"Error: {exc}", color="danger")
 
-    return html.P(
-        "Select a channel above.",
-        style={"color": TEXT_SECONDARY, "fontStyle": "italic"},
-    )
+    return html.P("Select a tab.", style={"color": TEXT_SECONDARY})
 
 
 # -- Yield Curve tab ---------------------------------------------------------
 
 def _yield_curve_tab():
     return html.Div([
-        _epigraph("yield_curve"),
-        dbc.Row([
-            dbc.Col([
-                html.Label("OVERLAY HISTORICAL CURVES",
-                           style={
-                               "color": TEXT_SECONDARY, "fontSize": "0.7rem",
-                               "fontFamily": "'JetBrains Mono', monospace",
-                               "letterSpacing": "0.08em", "marginBottom": "4px",
-                           }),
-                dcc.Dropdown(
-                    id="yc-overlay-dropdown",
-                    options=[{"label": k, "value": k} for k in HISTORICAL_OFFSETS],
-                    multi=True,
-                    placeholder="Summon the ghosts of curves past…",
-                    style={"backgroundColor": "#141425", "color": "#c8c8d4"},
+        # Pill-style radio buttons instead of dropdown
+        html.Div([
+            html.Div("Compare", className="section-label"),
+            html.Div(
+                dcc.RadioItems(
+                    id="yc-compare-radio",
+                    options=HISTORICAL_OPTIONS,
+                    value="none",
+                    inline=True,
+                    className="radio-pills",
                 ),
-            ], md=6, lg=4),
-        ], className="mb-3"),
-        dbc.Row(dbc.Col(dcc.Graph(id="yc-snapshot-chart"))),
+                className="radio-pills-container",
+            ),
+        ], className="mb-4"),
+        dbc.Row(dbc.Col(dcc.Graph(id="yc-snapshot-chart")), className="mb-3"),
         dbc.Row(dbc.Col(dcc.Graph(
             id="yc-heatmap-chart",
             figure=yield_curve_heatmap_figure(yc_df),
-        )), className="mt-3"),
+        ))),
     ])
 
 
 @app.callback(
     Output("yc-snapshot-chart", "figure"),
-    Input("yc-overlay-dropdown", "value"),
+    Input("yc-compare-radio", "value"),
 )
-def update_yc_snapshot(selected_overlays):
+def update_yc_snapshot(compare_value: str):
     curves: dict[str, pd.Series] = {}
 
     if not yc_df.empty:
-        today_label = f"Latest ({yc_df.index[-1].strftime('%Y-%m-%d')})"
+        today_label = f"Current ({yc_df.index[-1].strftime('%b %d, %Y')})"
         curves[today_label] = yield_curve_snapshot(yc_df)
 
-        if selected_overlays:
-            for label in selected_overlays:
-                offset = HISTORICAL_OFFSETS.get(label)
-                if offset is None:
-                    continue
-                target_date = date.today() - offset
-                try:
-                    curves[label] = yield_curve_snapshot(yc_df, as_of=str(target_date))
-                except Exception:
-                    pass
+        if compare_value and compare_value != "none":
+            label, offset = OFFSET_MAP[compare_value]
+            target_date = date.today() - offset
+            try:
+                curves[label] = yield_curve_snapshot(yc_df, as_of=str(target_date))
+            except Exception:
+                pass
 
     return yield_curve_snapshot_figure(curves)
 
 
 def _spreads_tab():
-    return html.Div([
-        _epigraph("spreads"),
-        dbc.Row(dbc.Col(dcc.Graph(figure=spread_monitor_figure(spread_data, usrec)))),
-    ])
+    return dbc.Row(dbc.Col(
+        dcc.Graph(figure=spread_monitor_figure(spread_data, usrec))
+    ))
 
 
 def _indicators_tab():
-    return html.Div([
-        _epigraph("indicators"),
-        dbc.Row(dbc.Col(dcc.Graph(
-            figure=leading_indicators_figure(umcsent, icsa, permit, t10y2y, usrec),
-        ))),
-    ])
+    return dbc.Row(dbc.Col(
+        dcc.Graph(figure=leading_indicators_figure(umcsent, icsa, permit, t10y2y, usrec))
+    ))
 
 
 def _inflation_tab():
-    return html.Div([
-        _epigraph("inflation"),
-        dbc.Row(dbc.Col(dcc.Graph(
-            figure=inflation_policy_figure(cpi, core_cpi, pce, fedfunds, usrec),
-        ))),
-    ])
+    return dbc.Row(dbc.Col(
+        dcc.Graph(figure=inflation_policy_figure(cpi, core_cpi, pce, fedfunds, usrec))
+    ))
 
 
 # ---------------------------------------------------------------------------

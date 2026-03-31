@@ -1,11 +1,8 @@
 """
-config.py — Central configuration.
-
-"Entropy is the figure of Death."
+config.py — Central configuration for FRED series, styling, and constants.
 """
 
 import os
-
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,7 +13,7 @@ load_dotenv()
 FRED_API_KEY = os.environ.get("FRED_API_KEY", "")
 
 # ---------------------------------------------------------------------------
-# Treasury yield-curve maturities
+# Treasury yield-curve maturities (short → long)
 # ---------------------------------------------------------------------------
 YIELD_CURVE_SERIES = {
     "DGS1MO": "1M",
@@ -33,9 +30,9 @@ YIELD_CURVE_SERIES = {
 }
 
 MATURITY_YEARS = {
-    "1M": 1 / 12,  "3M": 3 / 12,  "6M": 6 / 12,
-    "1Y": 1,  "2Y": 2,  "3Y": 3,  "5Y": 5,
-    "7Y": 7,  "10Y": 10,  "20Y": 20,  "30Y": 30,
+    "1M": 1/12, "3M": 3/12, "6M": 6/12,
+    "1Y": 1, "2Y": 2, "3Y": 3, "5Y": 5,
+    "7Y": 7, "10Y": 10, "20Y": 20, "30Y": 30,
 }
 
 MATURITY_ORDER = list(YIELD_CURVE_SERIES.values())
@@ -72,68 +69,35 @@ RECESSION_SERIES = "USREC"
 DEFAULT_LOOKBACK_YEARS = 10
 
 # ---------------------------------------------------------------------------
-# Pynchon Terminal — Color System
-#
-# A palette drawn from old wartime dispatches, fading signal lamps,
-# the amber of whiskey and suspicion, the green of radar and money,
-# and the red that means it's already too late.
+# Styling — Clean, minimal, refined
 # ---------------------------------------------------------------------------
-PLOTLY_TEMPLATE = "plotly_dark"
+PLOTLY_TEMPLATE = "plotly_white"
 
-# Backgrounds — the void behind the signal
-BG_PRIMARY = "#07070d"       # The deepest dark — pre-dawn Berlin
-BG_SECONDARY = "#0d0d15"    # Panel/card — a room with no windows
-BG_TERTIARY = "#141425"     # Hover — someone just walked in
+# Backgrounds
+BG_PRIMARY = "#fafbfc"
+BG_SECONDARY = "#ffffff"
 
-# Border — barely perceptible, like a pattern you can't quite prove
-BORDER_COLOR = "rgba(255, 200, 50, 0.08)"
-
-# The palette: each color tells a lie
+# A restrained, confident palette
 COLORS = [
-    "#c8a84e",  # Aged parchment gold — the document you weren't supposed to see
-    "#5e9e7e",  # Muted institutional green — the color of money and radar
-    "#c4705a",  # Faded terracotta — rust, old blood, Rilke's autumn
-    "#7a8ec4",  # Slate blue — the bureaucracy, the sky over Peenemünde
-    "#c4a07a",  # Warm sand — North Africa, Valletta, the desert of the real
-    "#8e7eb8",  # Dusted violet — twilight, the zone, Slothrop's dream
-    "#6aaa8a",  # Verdigris — oxidation, entropy made visible
-    "#c48a5e",  # Amber — whiskey, warning lights, late afternoon
-    "#7a9ab4",  # Washed denim blue — the sea, distance, escape
-    "#b47a7a",  # Muted rose — the memory of something that didn't happen
+    "#2563eb",  # Clean blue — primary
+    "#0d9488",  # Teal
+    "#dc2626",  # Red — crisp, not angry
+    "#7c3aed",  # Purple
+    "#ea580c",  # Warm orange
+    "#0891b2",  # Cyan
+    "#4f46e5",  # Indigo
+    "#059669",  # Emerald
+    "#d97706",  # Amber
+    "#be185d",  # Rose
 ]
 
-# Recession — They already know. The shading is just a formality.
-RECESSION_FILL_COLOR = "rgba(180, 60, 50, 0.10)"
+# Recession shading — soft, unobtrusive
+RECESSION_FILL_COLOR = "rgba(220, 38, 38, 0.06)"
 
 # Text
-TEXT_PRIMARY = "#c8c8d4"     # Typewriter ribbon, slightly worn
-TEXT_SECONDARY = "#6a6a88"   # Marginalia, pencil annotations
-TEXT_ACCENT = "#e8d5a3"      # The signal — amber, warm, unreliable
+TEXT_PRIMARY = "#1a1a2e"
+TEXT_SECONDARY = "#8b919a"
+TEXT_ACCENT = "#1a1a2e"
 
-# Grid — barely there, like a conspiracy
-GRID_COLOR = "rgba(200, 168, 78, 0.06)"
-
-# ---------------------------------------------------------------------------
-# Pynchon Epigraphs — one per tab
-# ---------------------------------------------------------------------------
-EPIGRAPHS = {
-    "yield_curve": (
-        "\"If they can get you asking the wrong questions, "
-        "they don't have to worry about answers.\"",
-        "— Gravity's Rainbow"
-    ),
-    "spreads": (
-        "\"Behind the hieroglyphic streets there would either be a "
-        "transcendent meaning, or only the earth.\"",
-        "— The Crying of Lot 49"
-    ),
-    "indicators": (
-        "\"She had heard all about excluded middles; they were bad shit, "
-        "to be avoided.\"",
-        "— The Crying of Lot 49"
-    ),
-    "inflation": (
-        "\"Entropy is the figure of Death.\"",
-        "— Slow Learner"
-    ),
-}
+# Grid — barely visible, clean
+GRID_COLOR = "rgba(0, 0, 0, 0.04)"

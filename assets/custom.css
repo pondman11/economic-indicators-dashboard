@@ -1,210 +1,201 @@
 /* =========================================================================
-   Economic Indicators Dashboard — The Pynchon Terminal
-   
-   "If they can get you asking the wrong questions, 
-    they don't have to worry about answers."
-    
-   — Thomas Pynchon, Gravity's Rainbow
+   Economic Indicators Dashboard — Clean & Sleek
+   Minimal. Refined. Confident. Like driving something expensive.
    ========================================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* --- Global: the void stares back --- */
+/* --- Global --- */
 body {
-    background-color: #07070d !important;
-    color: #c8c8d4 !important;
-    font-family: 'EB Garamond', Georgia, 'Times New Roman', serif !important;
+    background-color: #fafbfc !important;
+    color: #1a1a2e !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
     margin: 0;
-    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* --- Scanline overlay — the feeling of being watched --- */
-body::after {
-    content: "";
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0, 0, 0, 0.03) 2px,
-        rgba(0, 0, 0, 0.03) 4px
-    );
-    pointer-events: none;
-    z-index: 9999;
-}
-
-/* --- The Header: a dispatch from somewhere --- */
+/* --- Header --- */
 .dashboard-header {
-    background: linear-gradient(135deg, #0d0d15 0%, #141425 50%, #0d0d15 100%);
-    border-bottom: 1px solid rgba(255, 200, 50, 0.15);
-    padding: 1.5rem 2rem 1rem;
-    margin-bottom: 0;
-    position: relative;
-}
-
-/* Faint W.A.S.T.E. watermark */
-.dashboard-header::before {
-    content: "W.A.S.T.E.";
-    position: absolute;
-    right: 2rem;
-    top: 50%;
-    transform: translateY(-50%);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem;
-    color: rgba(255, 200, 50, 0.12);
-    letter-spacing: 0.3em;
+    background: #ffffff;
+    border-bottom: 1px solid #eaedf0;
+    padding: 1.25rem 2.5rem;
 }
 
 .dashboard-header h1 {
-    font-family: 'EB Garamond', Georgia, serif !important;
+    font-family: 'Inter', sans-serif !important;
     font-weight: 600;
-    font-size: 1.5rem;
-    color: #e8d5a3;
+    font-size: 1.15rem;
+    color: #1a1a2e;
     margin: 0;
-    letter-spacing: 0.02em;
-    font-style: italic;
+    letter-spacing: -0.01em;
 }
 
 .dashboard-header .subtitle {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    color: #6a6a88;
-    margin-top: 6px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-size: 0.72rem;
+    color: #8b919a;
+    margin-top: 3px;
+    letter-spacing: 0.02em;
+    font-weight: 400;
 }
 
-/* --- The Paranoid Ticker --- */
+/* --- Status bar --- */
 .status-bar {
-    background-color: #0a0a12;
-    border-bottom: 1px solid rgba(255, 200, 50, 0.08);
-    padding: 0.5rem 2rem;
-    font-family: 'EB Garamond', serif;
-    font-size: 0.8rem;
-    font-style: italic;
-    color: #8a7a60;
+    background-color: #ffffff;
+    border-bottom: 1px solid #eaedf0;
+    padding: 0.4rem 2.5rem;
+    font-size: 0.68rem;
+    color: #8b919a;
     display: flex;
-    gap: 2.5rem;
-    overflow: hidden;
+    gap: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
 }
 
 .status-bar .status-item {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    white-space: nowrap;
+    gap: 0.35rem;
 }
 
 .status-bar .status-dot {
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background-color: #c8a84e;
+    background-color: #34c759;
     display: inline-block;
-    box-shadow: 0 0 6px rgba(200, 168, 78, 0.5);
-    animation: pulse-glow 3s ease-in-out infinite;
-}
-
-@keyframes pulse-glow {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
 }
 
 .status-bar .status-dot.warn {
-    background-color: #d4764e;
-    box-shadow: 0 0 6px rgba(212, 118, 78, 0.5);
+    background-color: #ff9500;
 }
 
 .status-bar .status-dot.error {
-    background-color: #c44;
-    box-shadow: 0 0 6px rgba(204, 68, 68, 0.5);
+    background-color: #ff3b30;
 }
 
-/* --- Tabs: each a door you probably shouldn't open --- */
+/* --- Tabs --- */
 .nav-tabs {
-    border-bottom: 1px solid rgba(255, 200, 50, 0.1) !important;
-    background-color: #0d0d15;
-    padding: 0 1rem;
+    border-bottom: 1px solid #eaedf0 !important;
+    background-color: #ffffff;
+    padding: 0 2rem;
 }
 
 .nav-tabs .nav-link {
-    font-family: 'EB Garamond', Georgia, serif !important;
-    font-size: 0.9rem !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.78rem !important;
     font-weight: 500;
-    color: #6a6a88 !important;
+    color: #8b919a !important;
     border: none !important;
-    padding: 0.8rem 1.4rem !important;
-    letter-spacing: 0.03em;
-    font-style: italic;
-    transition: all 0.3s ease;
+    padding: 0.75rem 1.25rem !important;
+    letter-spacing: 0.01em;
+    transition: all 0.15s ease;
     border-bottom: 2px solid transparent !important;
 }
 
 .nav-tabs .nav-link:hover {
-    color: #c8c8d4 !important;
-    background-color: rgba(200, 168, 78, 0.04) !important;
-    border-bottom: 2px solid rgba(200, 168, 78, 0.25) !important;
+    color: #1a1a2e !important;
+    background-color: transparent !important;
+    border-bottom: 2px solid #d0d3d8 !important;
 }
 
 .nav-tabs .nav-link.active {
-    color: #e8d5a3 !important;
+    color: #1a1a2e !important;
     background-color: transparent !important;
-    border-bottom: 2px solid #c8a84e !important;
-    text-shadow: 0 0 12px rgba(200, 168, 78, 0.3);
+    border-bottom: 2px solid #1a1a2e !important;
 }
 
-/* --- Cards --- */
+/* --- Cards / Graphs --- */
 .card, .dash-graph {
-    background-color: #0d0d15 !important;
-    border: 1px solid rgba(255, 200, 50, 0.08) !important;
-    border-radius: 2px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #eaedf0 !important;
+    border-radius: 8px !important;
 }
 
-/* --- Dropdowns --- */
-.Select-control,
-.Select-menu-outer,
-.VirtualizedSelectOption {
-    background-color: #141425 !important;
-    border-color: rgba(255, 200, 50, 0.15) !important;
-    color: #c8c8d4 !important;
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.8rem !important;
+/* --- Radio button group (pill style) --- */
+.curve-selector {
+    display: flex;
+    gap: 0;
+    background: #f0f2f5;
+    border-radius: 8px;
+    padding: 3px;
+    width: fit-content;
 }
 
-.Select-value-label,
-.Select-placeholder {
-    color: #6a6a88 !important;
-    font-style: italic;
+.curve-selector label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #8b919a;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin: 0;
+    white-space: nowrap;
+    user-select: none;
 }
 
-.Select-value {
-    background-color: rgba(200, 168, 78, 0.1) !important;
-    border-color: rgba(200, 168, 78, 0.2) !important;
-    color: #e8d5a3 !important;
+.curve-selector input[type="radio"] {
+    display: none;
 }
 
-.VirtualizedSelectFocusedOption {
-    background-color: rgba(200, 168, 78, 0.12) !important;
+.curve-selector input[type="radio"]:checked + label {
+    background: #ffffff;
+    color: #1a1a2e;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* --- Dash RadioItems override --- */
+.radio-pills .form-check {
+    display: inline-flex;
+    padding: 0;
+    margin: 0;
+}
+
+.radio-pills .form-check-input {
+    display: none !important;
+}
+
+.radio-pills .form-check-label {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    color: #8b919a !important;
+    padding: 0.4rem 1rem !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    margin: 0 !important;
+}
+
+.radio-pills .form-check-input:checked + .form-check-label {
+    background: #ffffff !important;
+    color: #1a1a2e !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+.radio-pills-container {
+    display: inline-flex;
+    background: #f0f2f5;
+    border-radius: 8px;
+    padding: 3px;
 }
 
 /* --- Alerts --- */
 .alert-danger {
-    background-color: rgba(180, 60, 60, 0.1) !important;
-    border: 1px solid rgba(180, 60, 60, 0.3) !important;
-    color: #d48a8a !important;
-    font-family: 'EB Garamond', serif;
-    font-style: italic;
-    font-size: 0.95rem;
+    background-color: #fef2f2 !important;
+    border: 1px solid #fecaca !important;
+    color: #991b1b !important;
+    font-size: 0.85rem;
+    border-radius: 8px !important;
 }
 
 .alert-warning {
-    background-color: rgba(200, 168, 78, 0.06) !important;
-    border: 1px solid rgba(200, 168, 78, 0.2) !important;
-    color: #c8a84e !important;
-    font-family: 'EB Garamond', serif;
-    font-style: italic;
-    font-size: 0.9rem;
+    background-color: #fffbeb !important;
+    border: 1px solid #fde68a !important;
+    color: #92400e !important;
+    font-size: 0.83rem;
+    border-radius: 8px !important;
 }
 
 /* --- Container --- */
@@ -214,53 +205,42 @@ body::after {
 }
 
 .tab-content-area {
-    padding: 1.5rem 2rem;
+    padding: 1.5rem 2.5rem 3rem;
 }
 
-/* --- Epigraphs: those little literary asides --- */
-.epigraph {
-    font-family: 'EB Garamond', serif;
-    font-style: italic;
-    font-size: 0.85rem;
-    color: #6a6a88;
-    margin-bottom: 1.2rem;
-    padding-left: 1rem;
-    border-left: 2px solid rgba(200, 168, 78, 0.2);
-    max-width: 600px;
-}
-
-.epigraph .attribution {
-    display: block;
-    margin-top: 0.3rem;
-    font-size: 0.75rem;
-    color: #4a4a68;
-    font-style: normal;
-    letter-spacing: 0.04em;
+/* --- Section labels --- */
+.section-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #8b919a;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
 }
 
 /* --- Scrollbar --- */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #07070d; }
-::-webkit-scrollbar-thumb { background: #2a2a3e; border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: #3a3a4e; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #fafbfc; }
+::-webkit-scrollbar-thumb { background: #d0d3d8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #b0b3b8; }
 
 /* --- Plotly modebar --- */
 .modebar { background-color: transparent !important; }
-.modebar-btn path { fill: #6a6a88 !important; }
-.modebar-btn:hover path { fill: #e8d5a3 !important; }
+.modebar-btn path { fill: #c0c3c8 !important; }
+.modebar-btn:hover path { fill: #1a1a2e !important; }
 
-/* --- The Trystero footnote --- */
-.footnote {
-    font-family: 'EB Garamond', serif;
-    font-size: 0.7rem;
-    color: #3a3a55;
+/* --- Footer --- */
+.footer-note {
+    font-size: 0.68rem;
+    color: #b0b3b8;
     text-align: center;
-    padding: 2rem 1rem 1rem;
-    font-style: italic;
+    padding: 1.5rem 1rem 1rem;
 }
 
 @media (max-width: 768px) {
-    .dashboard-header h1 { font-size: 1.1rem; }
-    .tab-content-area { padding: 1rem; }
-    .status-bar { flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+    .dashboard-header { padding: 1rem 1.5rem; }
+    .dashboard-header h1 { font-size: 1rem; }
+    .tab-content-area { padding: 1rem 1.5rem; }
+    .status-bar { flex-wrap: wrap; gap: 0.5rem 1.5rem; padding: 0.4rem 1.5rem; }
 }
