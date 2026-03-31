@@ -13,7 +13,7 @@ load_dotenv()
 FRED_API_KEY = os.environ.get("FRED_API_KEY", "")
 
 # ---------------------------------------------------------------------------
-# Treasury yield-curve maturities (short → long)
+# Treasury yield-curve maturities (short to long)
 # ---------------------------------------------------------------------------
 YIELD_CURVE_SERIES = {
     "DGS1MO": "1M",
@@ -41,8 +41,8 @@ MATURITY_ORDER = list(YIELD_CURVE_SERIES.values())
 # Spread series
 # ---------------------------------------------------------------------------
 SPREAD_SERIES = {
-    "T10Y2Y": "10Y − 2Y",
-    "T10Y3M": "10Y − 3M",
+    "T10Y2Y": "10Y - 2Y",
+    "T10Y3M": "10Y - 3M",
 }
 
 # ---------------------------------------------------------------------------
@@ -69,35 +69,36 @@ RECESSION_SERIES = "USREC"
 DEFAULT_LOOKBACK_YEARS = 10
 
 # ---------------------------------------------------------------------------
-# Styling — Clean, minimal, refined
+# Styling — Dark, clean
 # ---------------------------------------------------------------------------
-PLOTLY_TEMPLATE = "plotly_white"
+PLOTLY_TEMPLATE = "plotly_dark"
 
 # Backgrounds
-BG_PRIMARY = "#fafbfc"
-BG_SECONDARY = "#ffffff"
+BG_PRIMARY = "#0f1117"
+BG_SECONDARY = "#161b22"
+BG_CHART = "#0d1117"
 
-# A restrained, confident palette
+# Clean palette — high contrast on dark, no muddy tones
 COLORS = [
-    "#2563eb",  # Clean blue — primary
-    "#0d9488",  # Teal
-    "#dc2626",  # Red — crisp, not angry
-    "#7c3aed",  # Purple
-    "#ea580c",  # Warm orange
-    "#0891b2",  # Cyan
-    "#4f46e5",  # Indigo
-    "#059669",  # Emerald
-    "#d97706",  # Amber
-    "#be185d",  # Rose
+    "#58a6ff",  # Blue
+    "#3fb950",  # Green
+    "#f85149",  # Red
+    "#bc8cff",  # Purple
+    "#d29922",  # Amber
+    "#39d2c0",  # Teal
+    "#79c0ff",  # Light blue
+    "#f0883e",  # Orange
+    "#a5d6ff",  # Pale blue
+    "#ffa198",  # Salmon
 ]
 
-# Recession shading — soft, unobtrusive
-RECESSION_FILL_COLOR = "rgba(220, 38, 38, 0.06)"
+# Recession shading
+RECESSION_FILL_COLOR = "rgba(248, 81, 73, 0.07)"
 
 # Text
-TEXT_PRIMARY = "#1a1a2e"
-TEXT_SECONDARY = "#8b919a"
-TEXT_ACCENT = "#1a1a2e"
+TEXT_PRIMARY = "#e1e4e8"
+TEXT_SECONDARY = "#7d8590"
 
-# Grid — barely visible, clean
-GRID_COLOR = "rgba(0, 0, 0, 0.04)"
+# Grid
+GRID_COLOR = "rgba(255, 255, 255, 0.04)"
+AXIS_COLOR = "#21262d"

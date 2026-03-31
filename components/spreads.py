@@ -9,13 +9,13 @@ import plotly.graph_objects as go
 
 from config import (
     PLOTLY_TEMPLATE, COLORS, RECESSION_FILL_COLOR,
-    BG_SECONDARY, GRID_COLOR, TEXT_PRIMARY, TEXT_SECONDARY,
+    BG_CHART, BG_SECONDARY, GRID_COLOR, AXIS_COLOR,
+    TEXT_PRIMARY, TEXT_SECONDARY,
 )
 from transforms import recession_periods
 
 _FONT = dict(family="Inter, -apple-system, sans-serif", color=TEXT_PRIMARY, size=12)
-_TITLE_FONT = dict(family="Inter, sans-serif", color=TEXT_PRIMARY, size=15, weight=600)
-_HOVERLABEL = dict(bgcolor="#ffffff", font_color=TEXT_PRIMARY, bordercolor="#eaedf0")
+_HOVERLABEL = dict(bgcolor=BG_SECONDARY, font_color=TEXT_PRIMARY, bordercolor=AXIS_COLOR)
 
 
 def spread_monitor_figure(
@@ -24,7 +24,6 @@ def spread_monitor_figure(
 ) -> go.Figure:
     fig = go.Figure()
 
-    # Recession shading
     if not usrec.empty:
         for start, end in recession_periods(usrec):
             fig.add_vrect(
@@ -42,9 +41,8 @@ def spread_monitor_figure(
             line=dict(color=COLORS[i % len(COLORS)], width=2),
         ))
 
-    # Inversion threshold
     fig.add_hline(
-        y=0, line_dash="dash", line_color="#d0d3d8", line_width=1,
+        y=0, line_dash="dash", line_color="#30363d", line_width=1,
         annotation_text="Inversion threshold",
         annotation_font=dict(size=10, color=TEXT_SECONDARY),
         annotation_position="bottom right",
@@ -53,17 +51,17 @@ def spread_monitor_figure(
     fig.update_layout(
         template=PLOTLY_TEMPLATE,
         paper_bgcolor=BG_SECONDARY,
-        plot_bgcolor=BG_SECONDARY,
+        plot_bgcolor=BG_CHART,
         font=_FONT,
         hoverlabel=_HOVERLABEL,
-        title=dict(text="Treasury Yield Spreads", font=_TITLE_FONT, x=0, xanchor="left"),
-        xaxis=dict(title="Date", gridcolor=GRID_COLOR, linecolor="#eaedf0"),
-        yaxis=dict(title="Spread (%)", gridcolor=GRID_COLOR, linecolor="#eaedf0"),
+        title=dict(text="Treasury Yield Spreads", font=dict(size=15, color=TEXT_PRIMARY)),
+        xaxis=dict(title="Date", gridcolor=GRID_COLOR, linecolor=AXIS_COLOR),
+        yaxis=dict(title="Spread (%)", gridcolor=GRID_COLOR, linecolor=AXIS_COLOR),
         legend=dict(
             orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0,
             bgcolor="rgba(0,0,0,0)", font=dict(size=11, color=TEXT_SECONDARY),
         ),
-        margin=dict(t=60, b=45, l=55, r=25),
+        margin=dict(t=55, b=45, l=55, r=25),
         hovermode="x unified",
     )
     return fig

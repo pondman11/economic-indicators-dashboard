@@ -1,7 +1,5 @@
 """
 app.py — Economic Indicators & Yield Curve Dashboard.
-
-Clean, minimal, fast.
 """
 
 from __future__ import annotations
@@ -20,7 +18,6 @@ from config import (
     SPREAD_SERIES,
     RECESSION_SERIES,
     BG_PRIMARY,
-    BG_SECONDARY,
     TEXT_SECONDARY,
 )
 from fred_client import get_series_safe, get_multiple, get_failures
@@ -38,7 +35,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 app = dash.Dash(
     __name__,
-    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    external_stylesheets=[dbc.themes.DARKLY],
     title="Economic Indicators Dashboard",
     suppress_callback_exceptions=True,
     meta_tags=[
@@ -73,7 +70,7 @@ def _load_data() -> None:
     if not FRED_API_KEY:
         DATA_ERROR = (
             "FRED_API_KEY is not set.\n\n"
-            "1. Get a free key → https://fred.stlouisfed.org/docs/api/api_key.html\n"
+            "1. Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html\n"
             "2. Add to .env: FRED_API_KEY=your_key_here\n"
             "3. Restart the app."
         )
@@ -105,9 +102,9 @@ def _load_data() -> None:
 _load_data()
 
 # ---------------------------------------------------------------------------
-# Historical overlay options — just three clean choices
+# Comparison options (radio buttons)
 # ---------------------------------------------------------------------------
-HISTORICAL_OPTIONS = [
+COMPARE_OPTIONS = [
     {"label": "Current only", "value": "none"},
     {"label": "vs 1 Year Ago", "value": "1y"},
     {"label": "vs 2 Years Ago", "value": "2y"},
@@ -147,7 +144,7 @@ def _header() -> html.Div:
         html.Div([
             html.H1("Economic Indicators & Yield Curve"),
             html.Div(
-                f"FRED data · 10-year lookback · Updated {date.today().strftime('%b %d, %Y')}",
+                f"FRED data  /  10-year lookback  /  Updated {date.today().strftime('%b %d, %Y')}",
                 className="subtitle",
             ),
         ], className="dashboard-header"),
@@ -225,13 +222,12 @@ def render_tab(active_tab: str):
 
 def _yield_curve_tab():
     return html.Div([
-        # Pill-style radio buttons instead of dropdown
         html.Div([
             html.Div("Compare", className="section-label"),
             html.Div(
                 dcc.RadioItems(
                     id="yc-compare-radio",
-                    options=HISTORICAL_OPTIONS,
+                    options=COMPARE_OPTIONS,
                     value="none",
                     inline=True,
                     className="radio-pills",
