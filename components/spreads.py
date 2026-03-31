@@ -1,8 +1,11 @@
 """
-components/spreads.py — Spread Monitor with recession shading.
+components/spreads.py — The Spread Monitor, or:
+How Far Apart the Promises Have Drifted.
 
-Neon lines on dark background with ominous red recession zones.
-Zero-line inversion threshold glows like a warning.
+When the spread goes negative, the yield curve has inverted.
+This has preceded every recession since 1955.
+Pynchon would note that the pattern recognition itself
+is part of the conspiracy.
 """
 
 from __future__ import annotations
@@ -17,14 +20,14 @@ from config import (
 from transforms import recession_periods
 
 _FONT = dict(
-    family="'JetBrains Mono', 'Fira Code', 'SF Mono', monospace",
+    family="'EB Garamond', Georgia, serif",
     color=TEXT_PRIMARY,
-    size=12,
+    size=13,
 )
 _HOVERLABEL = dict(
-    bgcolor="#1a1a2e",
-    font_color=TEXT_PRIMARY,
-    bordercolor=TEXT_ACCENT,
+    bgcolor="#141425",
+    font=dict(family="'JetBrains Mono', monospace", color=TEXT_PRIMARY, size=11),
+    bordercolor="rgba(200, 168, 78, 0.3)",
 )
 
 
@@ -32,17 +35,9 @@ def spread_monitor_figure(
     spreads: dict[str, pd.Series],
     usrec: pd.Series,
 ) -> go.Figure:
-    """
-    Build the spread monitor chart.
-
-    Parameters
-    ----------
-    spreads : dict mapping display label → pd.Series of spread values.
-    usrec   : USREC binary series for recession shading.
-    """
     fig = go.Figure()
 
-    # --- Recession shading — ominous red zones --------------------------------
+    # Recession shading — the official record of when They admitted it
     if not usrec.empty:
         for start, end in recession_periods(usrec):
             fig.add_vrect(
@@ -52,30 +47,32 @@ def spread_monitor_figure(
                 line_width=0,
             )
 
-    # --- Spread lines with glow effect ----------------------------------------
     for i, (label, series) in enumerate(spreads.items()):
         if series.empty:
             continue
         color = COLORS[i % len(COLORS)]
 
-        # Glow
+        # The echo
         fig.add_trace(go.Scatter(
             x=series.index, y=series.values,
-            mode="lines", line=dict(color=color, width=6),
-            opacity=0.12, showlegend=False, hoverinfo="skip",
+            mode="lines", line=dict(color=color, width=7),
+            opacity=0.07, showlegend=False, hoverinfo="skip",
         ))
-        # Main line
+        # The signal
         fig.add_trace(go.Scatter(
             x=series.index, y=series.values,
             mode="lines", name=label,
-            line=dict(color=color, width=2),
+            line=dict(color=color, width=1.8),
         ))
 
-    # --- Zero reference line — inversion threshold ----------------------------
+    # The zero line — below this, the promises have inverted
     fig.add_hline(
-        y=0, line_dash="dash", line_color="#ff3366", line_width=1.5,
-        annotation_text="⚠ INVERSION",
-        annotation_font=dict(color="#ff3366", size=11),
+        y=0, line_dash="dot", line_color="rgba(180, 60, 50, 0.6)", line_width=1,
+        annotation_text="inversion",
+        annotation_font=dict(
+            family="'EB Garamond', serif", color="rgba(180, 60, 50, 0.7)",
+            size=11,
+        ),
         annotation_position="bottom right",
     )
 
@@ -85,14 +82,18 @@ def spread_monitor_figure(
         plot_bgcolor=BG_PRIMARY,
         font=_FONT,
         hoverlabel=_HOVERLABEL,
-        title=dict(text="◆ TREASURY YIELD SPREADS — RECESSION MONITOR", font=dict(color=TEXT_ACCENT, size=16)),
+        title=dict(
+            text="<i>The Distance Between What Is Owed and What Is Believed</i>",
+            font=dict(family="'EB Garamond', serif", color=TEXT_ACCENT, size=18),
+        ),
         xaxis=dict(title="Date", gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR),
         yaxis=dict(title="Spread (%)", gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR),
         legend=dict(
             orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
-            bgcolor="rgba(0,0,0,0)", font=dict(size=11),
+            bgcolor="rgba(0,0,0,0)",
+            font=dict(family="'EB Garamond', serif", size=12),
         ),
-        margin=dict(t=70, b=50, l=60, r=30),
+        margin=dict(t=80, b=50, l=60, r=30),
         hovermode="x unified",
     )
     return fig

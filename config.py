@@ -1,26 +1,23 @@
 """
-config.py — Central configuration for FRED series IDs, maturity mappings,
-NBER recession dates, and other constants used across the dashboard.
+config.py — Central configuration.
+
+"Entropy is the figure of Death."
 """
 
 import os
 
 from dotenv import load_dotenv
 
-# Load variables from .env file (if present) so the API key doesn't need to
-# be exported manually every time.
 load_dotenv()
 
 # ---------------------------------------------------------------------------
 # FRED API Key
 # ---------------------------------------------------------------------------
-# Loaded from environment so it is never committed to source control.
 FRED_API_KEY = os.environ.get("FRED_API_KEY", "")
 
 # ---------------------------------------------------------------------------
 # Treasury yield-curve maturities
 # ---------------------------------------------------------------------------
-# Ordered short → long. The dict maps FRED series IDs to human-readable labels.
 YIELD_CURVE_SERIES = {
     "DGS1MO": "1M",
     "DGS3MO": "3M",
@@ -35,22 +32,12 @@ YIELD_CURVE_SERIES = {
     "DGS30":  "30Y",
 }
 
-# Numeric representation of each maturity in years (for x-axis positioning)
 MATURITY_YEARS = {
-    "1M": 1 / 12,
-    "3M": 3 / 12,
-    "6M": 6 / 12,
-    "1Y": 1,
-    "2Y": 2,
-    "3Y": 3,
-    "5Y": 5,
-    "7Y": 7,
-    "10Y": 10,
-    "20Y": 20,
-    "30Y": 30,
+    "1M": 1 / 12,  "3M": 3 / 12,  "6M": 6 / 12,
+    "1Y": 1,  "2Y": 2,  "3Y": 3,  "5Y": 5,
+    "7Y": 7,  "10Y": 10,  "20Y": 20,  "30Y": 30,
 }
 
-# Ordered list of maturity labels (short → long) for consistent axis ordering.
 MATURITY_ORDER = list(YIELD_CURVE_SERIES.values())
 
 # ---------------------------------------------------------------------------
@@ -77,64 +64,76 @@ MACRO_SERIES = {
 # ---------------------------------------------------------------------------
 # Recession indicator
 # ---------------------------------------------------------------------------
-RECESSION_SERIES = "USREC"  # 1 = recession, 0 = expansion
+RECESSION_SERIES = "USREC"
 
 # ---------------------------------------------------------------------------
-# Default lookback window (years)
+# Default lookback
 # ---------------------------------------------------------------------------
 DEFAULT_LOOKBACK_YEARS = 10
 
 # ---------------------------------------------------------------------------
-# Dark Terminal Styling — Bloomberg meets the future
+# Pynchon Terminal — Color System
+#
+# A palette drawn from old wartime dispatches, fading signal lamps,
+# the amber of whiskey and suspicion, the green of radar and money,
+# and the red that means it's already too late.
 # ---------------------------------------------------------------------------
 PLOTLY_TEMPLATE = "plotly_dark"
 
-# Background colors
-BG_PRIMARY = "#0a0a0f"       # Deep space black
-BG_SECONDARY = "#12121a"     # Card/panel background
-BG_TERTIARY = "#1a1a2e"      # Slightly lighter for hover states
-BORDER_COLOR = "#2a2a3e"     # Subtle border glow
+# Backgrounds — the void behind the signal
+BG_PRIMARY = "#07070d"       # The deepest dark — pre-dawn Berlin
+BG_SECONDARY = "#0d0d15"    # Panel/card — a room with no windows
+BG_TERTIARY = "#141425"     # Hover — someone just walked in
 
-# Accent colors — electric, high contrast on dark
+# Border — barely perceptible, like a pattern you can't quite prove
+BORDER_COLOR = "rgba(255, 200, 50, 0.08)"
+
+# The palette: each color tells a lie
 COLORS = [
-    "#00d4ff",  # Electric cyan
-    "#ff6b35",  # Hot orange
-    "#00ff88",  # Neon green
-    "#ff3366",  # Hot pink
-    "#aa77ff",  # Electric purple
-    "#ffcc00",  # Gold
-    "#00ffcc",  # Mint
-    "#ff77aa",  # Coral pink
-    "#77aaff",  # Soft blue
-    "#ffaa00",  # Amber
+    "#c8a84e",  # Aged parchment gold — the document you weren't supposed to see
+    "#5e9e7e",  # Muted institutional green — the color of money and radar
+    "#c4705a",  # Faded terracotta — rust, old blood, Rilke's autumn
+    "#7a8ec4",  # Slate blue — the bureaucracy, the sky over Peenemünde
+    "#c4a07a",  # Warm sand — North Africa, Valletta, the desert of the real
+    "#8e7eb8",  # Dusted violet — twilight, the zone, Slothrop's dream
+    "#6aaa8a",  # Verdigris — oxidation, entropy made visible
+    "#c48a5e",  # Amber — whiskey, warning lights, late afternoon
+    "#7a9ab4",  # Washed denim blue — the sea, distance, escape
+    "#b47a7a",  # Muted rose — the memory of something that didn't happen
 ]
 
-# Recession shading — ominous red glow
-RECESSION_FILL_COLOR = "rgba(255, 50, 50, 0.12)"
+# Recession — They already know. The shading is just a formality.
+RECESSION_FILL_COLOR = "rgba(180, 60, 50, 0.10)"
 
-# Text colors
-TEXT_PRIMARY = "#e0e0e8"
-TEXT_SECONDARY = "#8888aa"
-TEXT_ACCENT = "#00d4ff"
+# Text
+TEXT_PRIMARY = "#c8c8d4"     # Typewriter ribbon, slightly worn
+TEXT_SECONDARY = "#6a6a88"   # Marginalia, pencil annotations
+TEXT_ACCENT = "#e8d5a3"      # The signal — amber, warm, unreliable
 
-# Chart grid
-GRID_COLOR = "rgba(255, 255, 255, 0.06)"
+# Grid — barely there, like a conspiracy
+GRID_COLOR = "rgba(200, 168, 78, 0.06)"
 
-# Plotly layout defaults applied to every figure
-CHART_LAYOUT_DEFAULTS = dict(
-    paper_bgcolor=BG_SECONDARY,
-    plot_bgcolor=BG_PRIMARY,
-    font=dict(
-        family="'JetBrains Mono', 'Fira Code', 'SF Mono', monospace",
-        color=TEXT_PRIMARY,
-        size=12,
+# ---------------------------------------------------------------------------
+# Pynchon Epigraphs — one per tab
+# ---------------------------------------------------------------------------
+EPIGRAPHS = {
+    "yield_curve": (
+        "\"If they can get you asking the wrong questions, "
+        "they don't have to worry about answers.\"",
+        "— Gravity's Rainbow"
     ),
-    title_font=dict(size=16, color=TEXT_ACCENT),
-    xaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR),
-    yaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR),
-    hoverlabel=dict(
-        bgcolor=BG_TERTIARY,
-        font_color=TEXT_PRIMARY,
-        bordercolor=TEXT_ACCENT,
+    "spreads": (
+        "\"Behind the hieroglyphic streets there would either be a "
+        "transcendent meaning, or only the earth.\"",
+        "— The Crying of Lot 49"
     ),
-)
+    "indicators": (
+        "\"She had heard all about excluded middles; they were bad shit, "
+        "to be avoided.\"",
+        "— The Crying of Lot 49"
+    ),
+    "inflation": (
+        "\"Entropy is the figure of Death.\"",
+        "— Slow Learner"
+    ),
+}

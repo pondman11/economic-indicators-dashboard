@@ -1,8 +1,12 @@
 """
-components/indicators.py — Leading Indicators panel (2×2 grid).
+components/indicators.py — The Leading Indicators, or:
+Four Ways of Knowing What's Coming
+(None of Them Reliable).
 
-Each sub-chart displays one leading indicator with recession shading.
-Dark terminal aesthetic with neon accent lines.
+Consumer Sentiment: how the preterite feel.
+Initial Claims: how many have been cast out this week.
+Building Permits: the faith required to build something.
+The Spread: see spreads.py; it follows you here too.
 """
 
 from __future__ import annotations
@@ -13,9 +17,15 @@ from plotly.subplots import make_subplots
 
 from config import (
     PLOTLY_TEMPLATE, COLORS, RECESSION_FILL_COLOR,
-    CHART_LAYOUT_DEFAULTS, BG_PRIMARY, BG_SECONDARY, GRID_COLOR, TEXT_ACCENT,
+    BG_PRIMARY, BG_SECONDARY, GRID_COLOR, TEXT_PRIMARY, TEXT_ACCENT,
 )
 from transforms import recession_periods, rolling_mean
+
+_FONT = dict(
+    family="'EB Garamond', Georgia, serif",
+    color=TEXT_PRIMARY,
+    size=12,
+)
 
 
 def leading_indicators_figure(
@@ -25,21 +35,17 @@ def leading_indicators_figure(
     t10y2y: pd.Series,
     usrec: pd.Series,
 ) -> go.Figure:
-    """
-    Build a 2×2 grid of leading-indicator line charts with recession shading.
-    """
-    # Compute 4-week moving average of initial claims
     icsa_ma = rolling_mean(icsa, window=4) if not icsa.empty else icsa
 
     fig = make_subplots(
         rows=2, cols=2,
         subplot_titles=[
-            "▸ CONSUMER SENTIMENT",
-            "▸ INITIAL CLAIMS (4-WK MA)",
-            "▸ BUILDING PERMITS",
-            "▸ 10Y − 2Y SPREAD",
+            "<i>The Sentiment of the Preterite</i>",
+            "<i>The Newly Dispossessed (4-Wk Avg)</i>",
+            "<i>Acts of Faith in Concrete</i>",
+            "<i>The Spread (It Follows You)</i>",
         ],
-        vertical_spacing=0.14,
+        vertical_spacing=0.16,
         horizontal_spacing=0.08,
     )
 
@@ -54,46 +60,46 @@ def leading_indicators_figure(
                 row=row, col=col,
             )
 
-    # --- Consumer Sentiment ---------------------------------------------------
+    # Consumer Sentiment — the mood of those not invited to the party
     if not umcsent.empty:
         fig.add_trace(go.Scatter(
             x=umcsent.index, y=umcsent.values,
             mode="lines", name="Sentiment",
-            line=dict(color=COLORS[0], width=1.8),
+            line=dict(color=COLORS[0], width=1.5),
             showlegend=False,
         ), row=1, col=1)
     _shade(1, 1)
 
-    # --- Initial Claims (4-wk MA) --------------------------------------------
+    # Initial Claims — each data point is a person
     if not icsa_ma.empty:
         fig.add_trace(go.Scatter(
             x=icsa_ma.index, y=icsa_ma.values,
-            mode="lines", name="Claims (4-Wk MA)",
-            line=dict(color=COLORS[1], width=1.8),
+            mode="lines", name="Claims",
+            line=dict(color=COLORS[2], width=1.5),
             showlegend=False,
         ), row=1, col=2)
     _shade(1, 2)
 
-    # --- Building Permits -----------------------------------------------------
+    # Building Permits — optimism denominated in lumber and permits
     if not permit.empty:
         fig.add_trace(go.Scatter(
             x=permit.index, y=permit.values,
             mode="lines", name="Permits",
-            line=dict(color=COLORS[2], width=1.8),
+            line=dict(color=COLORS[1], width=1.5),
             showlegend=False,
         ), row=2, col=1)
     _shade(2, 1)
 
-    # --- 10Y − 2Y Spread -----------------------------------------------------
+    # The Spread — again, always
     if not t10y2y.empty:
         fig.add_trace(go.Scatter(
             x=t10y2y.index, y=t10y2y.values,
             mode="lines", name="10Y−2Y",
-            line=dict(color=COLORS[3], width=1.8),
+            line=dict(color=COLORS[3], width=1.5),
             showlegend=False,
         ), row=2, col=2)
     fig.add_hline(
-        y=0, line_dash="dash", line_color="#ff3366", line_width=1,
+        y=0, line_dash="dot", line_color="rgba(180, 60, 50, 0.5)", line_width=1,
         row=2, col=2,
     )
     _shade(2, 2)
@@ -102,14 +108,17 @@ def leading_indicators_figure(
         template=PLOTLY_TEMPLATE,
         paper_bgcolor=BG_SECONDARY,
         plot_bgcolor=BG_PRIMARY,
-        font=CHART_LAYOUT_DEFAULTS["font"],
-        title=dict(text="◆ LEADING ECONOMIC INDICATORS", font=dict(color=TEXT_ACCENT, size=16)),
-        height=650,
-        margin=dict(t=90, b=50, l=60, r=30),
+        font=_FONT,
+        title=dict(
+            text="<i>Four Instruments, None of Them Tuned</i>",
+            font=dict(family="'EB Garamond', serif", color=TEXT_ACCENT, size=18),
+        ),
+        height=680,
+        margin=dict(t=100, b=50, l=60, r=30),
         hovermode="x unified",
     )
 
-    # Style all subplot axes
+    # Style subplot axes
     for i in range(1, 5):
         suffix = "" if i == 1 else str(i)
         fig.update_layout(**{
@@ -117,8 +126,8 @@ def leading_indicators_figure(
             f"yaxis{suffix}": dict(gridcolor=GRID_COLOR),
         })
 
-    # Style subplot titles
+    # Subplot titles in Garamond
     for ann in fig.layout.annotations:
-        ann.font = dict(color=TEXT_ACCENT, size=12)
+        ann.font = dict(family="'EB Garamond', serif", color=TEXT_ACCENT, size=12)
 
     return fig
