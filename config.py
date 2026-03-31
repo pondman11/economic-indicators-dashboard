@@ -85,23 +85,56 @@ RECESSION_SERIES = "USREC"  # 1 = recession, 0 = expansion
 DEFAULT_LOOKBACK_YEARS = 10
 
 # ---------------------------------------------------------------------------
-# Styling
+# Dark Terminal Styling — Bloomberg meets the future
 # ---------------------------------------------------------------------------
-PLOTLY_TEMPLATE = "plotly_white"
+PLOTLY_TEMPLATE = "plotly_dark"
 
-# Muted color palette for chart lines
+# Background colors
+BG_PRIMARY = "#0a0a0f"       # Deep space black
+BG_SECONDARY = "#12121a"     # Card/panel background
+BG_TERTIARY = "#1a1a2e"      # Slightly lighter for hover states
+BORDER_COLOR = "#2a2a3e"     # Subtle border glow
+
+# Accent colors — electric, high contrast on dark
 COLORS = [
-    "#1f77b4",  # muted blue
-    "#ff7f0e",  # safety orange
-    "#2ca02c",  # cooked asparagus green
-    "#d62728",  # brick red
-    "#9467bd",  # muted purple
-    "#8c564b",  # chestnut brown
-    "#e377c2",  # raspberry yogurt pink
-    "#7f7f7f",  # middle gray
-    "#bcbd22",  # curry yellow-green
-    "#17becf",  # blue-teal
+    "#00d4ff",  # Electric cyan
+    "#ff6b35",  # Hot orange
+    "#00ff88",  # Neon green
+    "#ff3366",  # Hot pink
+    "#aa77ff",  # Electric purple
+    "#ffcc00",  # Gold
+    "#00ffcc",  # Mint
+    "#ff77aa",  # Coral pink
+    "#77aaff",  # Soft blue
+    "#ffaa00",  # Amber
 ]
 
-# Recession shading fill color (translucent red/orange)
-RECESSION_FILL_COLOR = "rgba(255, 100, 100, 0.15)"
+# Recession shading — ominous red glow
+RECESSION_FILL_COLOR = "rgba(255, 50, 50, 0.12)"
+
+# Text colors
+TEXT_PRIMARY = "#e0e0e8"
+TEXT_SECONDARY = "#8888aa"
+TEXT_ACCENT = "#00d4ff"
+
+# Chart grid
+GRID_COLOR = "rgba(255, 255, 255, 0.06)"
+
+# Plotly layout defaults applied to every figure
+CHART_LAYOUT_DEFAULTS = dict(
+    paper_bgcolor=BG_SECONDARY,
+    plot_bgcolor=BG_PRIMARY,
+    font=dict(
+        family="'JetBrains Mono', 'Fira Code', 'SF Mono', monospace",
+        color=TEXT_PRIMARY,
+        size=12,
+    ),
+    title_font=dict(size=16, color=TEXT_ACCENT),
+    xaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR),
+    yaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR),
+    hoverlabel=dict(
+        bgcolor=BG_TERTIARY,
+        font_color=TEXT_PRIMARY,
+        bordercolor=TEXT_ACCENT,
+    ),
+)

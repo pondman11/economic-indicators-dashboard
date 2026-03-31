@@ -1,0 +1,217 @@
+/* =========================================================================
+   Economic Indicators Dashboard — Dark Terminal Theme
+   Bloomberg meets cyberpunk. Clean, dense, professional.
+   ========================================================================= */
+
+/* --- Import monospace font from Google Fonts --- */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* --- Global --- */
+body {
+    background-color: #0a0a0f !important;
+    color: #e0e0e8 !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* --- Top header bar --- */
+.dashboard-header {
+    background: linear-gradient(135deg, #12121a 0%, #1a1a2e 100%);
+    border-bottom: 1px solid #2a2a3e;
+    padding: 1rem 2rem;
+    margin-bottom: 0;
+}
+
+.dashboard-header h1 {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 600;
+    font-size: 1.4rem;
+    color: #00d4ff;
+    margin: 0;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.dashboard-header .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: #8888aa;
+    margin-top: 2px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* --- Status ticker bar --- */
+.status-bar {
+    background-color: #12121a;
+    border-bottom: 1px solid #1a1a2e;
+    padding: 0.4rem 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: #8888aa;
+    display: flex;
+    gap: 2rem;
+}
+
+.status-bar .status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.status-bar .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #00ff88;
+    display: inline-block;
+    box-shadow: 0 0 4px #00ff88;
+}
+
+.status-bar .status-dot.warn {
+    background-color: #ffcc00;
+    box-shadow: 0 0 4px #ffcc00;
+}
+
+.status-bar .status-dot.error {
+    background-color: #ff3366;
+    box-shadow: 0 0 4px #ff3366;
+}
+
+/* --- Tabs --- */
+.nav-tabs {
+    border-bottom: 1px solid #2a2a3e !important;
+    background-color: #12121a;
+    padding: 0 1rem;
+}
+
+.nav-tabs .nav-link {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.78rem !important;
+    font-weight: 500;
+    color: #8888aa !important;
+    border: none !important;
+    padding: 0.75rem 1.25rem !important;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent !important;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #e0e0e8 !important;
+    background-color: rgba(0, 212, 255, 0.05) !important;
+    border-bottom: 2px solid rgba(0, 212, 255, 0.3) !important;
+}
+
+.nav-tabs .nav-link.active {
+    color: #00d4ff !important;
+    background-color: transparent !important;
+    border-bottom: 2px solid #00d4ff !important;
+    text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+}
+
+/* --- Cards / panels --- */
+.card, .dash-graph {
+    background-color: #12121a !important;
+    border: 1px solid #2a2a3e !important;
+    border-radius: 6px !important;
+}
+
+/* --- Dropdown (dark styled) --- */
+.Select-control,
+.Select-menu-outer,
+.VirtualizedSelectOption {
+    background-color: #1a1a2e !important;
+    border-color: #2a2a3e !important;
+    color: #e0e0e8 !important;
+}
+
+.Select-value-label,
+.Select-placeholder {
+    color: #8888aa !important;
+}
+
+.Select-value {
+    background-color: #2a2a3e !important;
+    border-color: #3a3a5e !important;
+    color: #00d4ff !important;
+}
+
+.Select-arrow-zone .Select-arrow {
+    border-top-color: #8888aa !important;
+}
+
+.VirtualizedSelectOption.VirtualizedSelectFocusedOption {
+    background-color: rgba(0, 212, 255, 0.15) !important;
+}
+
+/* --- Alert banners --- */
+.alert-danger {
+    background-color: rgba(255, 51, 102, 0.1) !important;
+    border: 1px solid #ff3366 !important;
+    color: #ff6b8a !important;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+}
+
+.alert-warning {
+    background-color: rgba(255, 204, 0, 0.08) !important;
+    border: 1px solid rgba(255, 204, 0, 0.3) !important;
+    color: #ffcc00 !important;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+}
+
+/* --- Container --- */
+.container-fluid {
+    padding: 0 !important;
+    max-width: 100% !important;
+}
+
+/* Tab content area */
+.tab-content-area {
+    padding: 1.5rem 2rem;
+}
+
+/* --- Scrollbar (webkit) --- */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #0a0a0f;
+}
+::-webkit-scrollbar-thumb {
+    background: #2a2a3e;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #3a3a5e;
+}
+
+/* --- Plotly modebar (chart toolbar) — make it subtle --- */
+.modebar {
+    background-color: transparent !important;
+}
+.modebar-btn path {
+    fill: #8888aa !important;
+}
+.modebar-btn:hover path {
+    fill: #00d4ff !important;
+}
+
+/* --- Responsive tweaks --- */
+@media (max-width: 768px) {
+    .dashboard-header h1 {
+        font-size: 1rem;
+    }
+    .tab-content-area {
+        padding: 1rem;
+    }
+    .status-bar {
+        flex-wrap: wrap;
+        gap: 0.5rem 1.5rem;
+    }
+}
