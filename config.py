@@ -5,6 +5,12 @@ NBER recession dates, and other constants used across the dashboard.
 
 import os
 
+from dotenv import load_dotenv
+
+# Load variables from .env file (if present) so the API key doesn't need to
+# be exported manually every time.
+load_dotenv()
+
 # ---------------------------------------------------------------------------
 # FRED API Key
 # ---------------------------------------------------------------------------
