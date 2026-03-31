@@ -33,7 +33,7 @@ def inflation_policy_figure(
     fig = make_subplots(
         rows=2, cols=1,
         subplot_titles=["Inflation (Year-over-Year %)", "Effective Federal Funds Rate"],
-        vertical_spacing=0.13,
+        vertical_spacing=0.15,
         row_heights=[0.55, 0.45],
     )
 
@@ -84,12 +84,13 @@ def inflation_policy_figure(
         plot_bgcolor=BG_CHART,
         font=_FONT,
         hoverlabel=_HOVERLABEL,
-        title=dict(text="Inflation & Monetary Policy", font=dict(size=15, color=TEXT_PRIMARY)),
-        height=700,
-        margin=dict(t=75, b=45, l=55, r=25),
+        title=dict(text="Inflation & Monetary Policy", font=dict(size=15, color=TEXT_PRIMARY),
+                   x=0.01, xanchor="left", pad=dict(b=10)),
+        height=750,
+        margin=dict(t=90, b=50, l=60, r=30),
         hovermode="x unified",
         legend=dict(
-            orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0,
+            orientation="h", yanchor="bottom", y=1.06, xanchor="left", x=0,
             bgcolor="rgba(0,0,0,0)", font=dict(size=11, color=TEXT_SECONDARY),
         ),
     )

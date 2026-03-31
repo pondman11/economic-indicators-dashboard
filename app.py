@@ -21,11 +21,15 @@ from config import (
     TEXT_SECONDARY,
 )
 from fred_client import get_series_safe, get_multiple, get_failures
-from transforms import build_yield_curve_df, yield_curve_snapshot
+from transforms import build_yield_curve_df, yield_curve_snapshot, yoy_pct_change
 from components.yield_curve import yield_curve_snapshot_figure, yield_curve_heatmap_figure
 from components.spreads import spread_monitor_figure
 from components.indicators import leading_indicators_figure
 from components.inflation import inflation_policy_figure
+from components.kpi_cards import (
+    yield_curve_kpis, spreads_kpis, indicators_kpis, inflation_kpis,
+    news_panel,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
@@ -56,6 +60,7 @@ umcsent = pd.Series(dtype=float)
 icsa = pd.Series(dtype=float)
 permit = pd.Series(dtype=float)
 t10y2y = pd.Series(dtype=float)
+t10y3m = pd.Series(dtype=float)
 cpi = pd.Series(dtype=float)
 core_cpi = pd.Series(dtype=float)
 pce = pd.Series(dtype=float)
@@ -64,7 +69,7 @@ fedfunds = pd.Series(dtype=float)
 
 def _load_data() -> None:
     global DATA_ERROR, yc_df, spread_data, usrec
-    global umcsent, icsa, permit, t10y2y
+    global umcsent, icsa, permit, t10y2y, t10y3m
     global cpi, core_cpi, pce, fedfunds
 
     if not FRED_API_KEY:
@@ -89,6 +94,7 @@ def _load_data() -> None:
     icsa = get_series_safe("ICSA")
     permit = get_series_safe("PERMIT")
     t10y2y = get_series_safe("T10Y2Y")
+    t10y3m = get_series_safe("T10Y3M")
     cpi = get_series_safe("CPIAUCSL")
     core_cpi = get_series_safe("CPILFESL")
     pce = get_series_safe("PCEPI")
@@ -102,7 +108,7 @@ def _load_data() -> None:
 _load_data()
 
 # ---------------------------------------------------------------------------
-# Comparison options (radio buttons)
+# Comparison options
 # ---------------------------------------------------------------------------
 COMPARE_OPTIONS = [
     {"label": "Current only", "value": "none"},
@@ -116,6 +122,26 @@ OFFSET_MAP = {
     "2y": ("2 Years Ago", timedelta(days=730)),
     "5y": ("5 Years Ago", timedelta(days=1825)),
 }
+
+
+# ---------------------------------------------------------------------------
+# Pre-compute inflation KPI values (avoid recomputing on each render)
+# ---------------------------------------------------------------------------
+def _latest_yoy(series: pd.Series) -> float | None:
+    """Compute latest YoY% from a monthly level series."""
+    if series.empty:
+        return None
+    yoy = yoy_pct_change(series)
+    yoy = yoy.dropna()
+    if yoy.empty:
+        return None
+    return float(yoy.iloc[-1])
+
+
+_cpi_yoy_val = _latest_yoy(cpi)
+_core_yoy_val = _latest_yoy(core_cpi)
+_pce_yoy_val = _latest_yoy(pce)
+_ff_val = float(fedfunds.dropna().iloc[-1]) if not fedfunds.empty else None
 
 
 # ---------------------------------------------------------------------------
@@ -157,6 +183,31 @@ def _header() -> html.Div:
     ])
 
 
+def _compare_buttons() -> html.Div:
+    """Segmented button group for yield curve comparison."""
+    return html.Div([
+        html.Div("Compare", className="section-label"),
+        dbc.ButtonGroup([
+            dbc.Button(
+                opt["label"],
+                id=f"btn-compare-{opt['value']}",
+                color="secondary",
+                outline=True,
+                size="sm",
+                n_clicks=0,
+                style={
+                    "fontSize": "0.75rem",
+                    "fontWeight": "500",
+                    "fontStyle": "normal",
+                    "letterSpacing": "0.01em",
+                },
+            )
+            for opt in COMPARE_OPTIONS
+        ], size="sm"),
+        dcc.Store(id="yc-compare-store", data="none"),
+    ], className="mb-4")
+
+
 def _build_layout() -> html.Div:
     if DATA_ERROR:
         return html.Div([
@@ -181,7 +232,8 @@ def _build_layout() -> html.Div:
         html.Div(id="tab-content", className="tab-content-area"),
 
         html.Div(
-            "Data from Federal Reserve Bank of St. Louis (FRED)",
+            "Data from Federal Reserve Bank of St. Louis (FRED) · "
+            "News via Google News",
             className="footer-note",
         ),
     ], style={"backgroundColor": BG_PRIMARY, "minHeight": "100vh"})
@@ -222,30 +274,33 @@ def render_tab(active_tab: str):
 
 def _yield_curve_tab():
     return html.Div([
-        html.Div([
-            html.Div("Compare", className="section-label"),
-            html.Div(
-                dcc.RadioItems(
-                    id="yc-compare-radio",
-                    options=COMPARE_OPTIONS,
-                    value="none",
-                    inline=True,
-                    className="radio-pills",
-                ),
-                className="radio-pills-container",
-            ),
-        ], className="mb-4"),
-        dbc.Row(dbc.Col(dcc.Graph(id="yc-snapshot-chart")), className="mb-3"),
+        yield_curve_kpis(yc_df, t10y2y),
+        _compare_buttons(),
+        dbc.Row(dbc.Col(dcc.Graph(id="yc-snapshot-chart")), className="mb-4"),
         dbc.Row(dbc.Col(dcc.Graph(
             id="yc-heatmap-chart",
             figure=yield_curve_heatmap_figure(yc_df),
         ))),
+        news_panel("yield_curve"),
     ])
 
 
 @app.callback(
+    Output("yc-compare-store", "data"),
+    [Input(f"btn-compare-{opt['value']}", "n_clicks") for opt in COMPARE_OPTIONS],
+    prevent_initial_call=True,
+)
+def update_compare_store(*args):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        return "none"
+    button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    return button_id.replace("btn-compare-", "")
+
+
+@app.callback(
     Output("yc-snapshot-chart", "figure"),
-    Input("yc-compare-radio", "value"),
+    Input("yc-compare-store", "data"),
 )
 def update_yc_snapshot(compare_value: str):
     curves: dict[str, pd.Series] = {}
@@ -265,22 +320,48 @@ def update_yc_snapshot(compare_value: str):
     return yield_curve_snapshot_figure(curves)
 
 
-def _spreads_tab():
-    return dbc.Row(dbc.Col(
-        dcc.Graph(figure=spread_monitor_figure(spread_data, usrec))
-    ))
+@app.callback(
+    [Output(f"btn-compare-{opt['value']}", "outline") for opt in COMPARE_OPTIONS],
+    Input("yc-compare-store", "data"),
+)
+def update_button_styles(compare_value: str):
+    return [opt["value"] != compare_value for opt in COMPARE_OPTIONS]
 
+
+# -- Spreads tab -------------------------------------------------------------
+
+def _spreads_tab():
+    return html.Div([
+        spreads_kpis(t10y2y, t10y3m, usrec),
+        dbc.Row(dbc.Col(
+            dcc.Graph(figure=spread_monitor_figure(spread_data, usrec))
+        )),
+        news_panel("spreads"),
+    ])
+
+
+# -- Leading Indicators tab --------------------------------------------------
 
 def _indicators_tab():
-    return dbc.Row(dbc.Col(
-        dcc.Graph(figure=leading_indicators_figure(umcsent, icsa, permit, t10y2y, usrec))
-    ))
+    return html.Div([
+        indicators_kpis(umcsent, icsa, permit),
+        dbc.Row(dbc.Col(
+            dcc.Graph(figure=leading_indicators_figure(umcsent, icsa, permit, t10y2y, usrec))
+        )),
+        news_panel("indicators"),
+    ])
 
+
+# -- Inflation & Policy tab --------------------------------------------------
 
 def _inflation_tab():
-    return dbc.Row(dbc.Col(
-        dcc.Graph(figure=inflation_policy_figure(cpi, core_cpi, pce, fedfunds, usrec))
-    ))
+    return html.Div([
+        inflation_kpis(_cpi_yoy_val, _core_yoy_val, _pce_yoy_val, _ff_val),
+        dbc.Row(dbc.Col(
+            dcc.Graph(figure=inflation_policy_figure(cpi, core_cpi, pce, fedfunds, usrec))
+        )),
+        news_panel("inflation"),
+    ])
 
 
 # ---------------------------------------------------------------------------

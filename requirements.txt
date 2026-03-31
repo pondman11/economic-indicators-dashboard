@@ -5,3 +5,4 @@ pandas>=2.1
 numpy>=1.26
 fredapi>=0.5
 python-dotenv>=1.0
+feedparser>=6.0

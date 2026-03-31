@@ -38,21 +38,22 @@ def yield_curve_snapshot_figure(curves: dict[str, pd.Series]) -> go.Figure:
         plot_bgcolor=BG_CHART,
         font=_FONT,
         hoverlabel=_HOVERLABEL,
-        title=dict(text="US Treasury Yield Curve", font=dict(size=15, color=TEXT_PRIMARY)),
+        title=dict(text="US Treasury Yield Curve", font=dict(size=15, color=TEXT_PRIMARY),
+                   x=0.01, xanchor="left", pad=dict(b=15)),
         xaxis=dict(title="Maturity", gridcolor=GRID_COLOR, linecolor=AXIS_COLOR),
         yaxis=dict(title="Yield (%)", gridcolor=GRID_COLOR, linecolor=AXIS_COLOR),
         legend=dict(
-            orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0,
+            orientation="h", yanchor="bottom", y=1.06, xanchor="left", x=0,
             bgcolor="rgba(0,0,0,0)", font=dict(size=11, color=TEXT_SECONDARY),
         ),
-        margin=dict(t=55, b=45, l=55, r=25),
+        margin=dict(t=80, b=50, l=60, r=30),
         hovermode="x unified",
     )
     return fig
 
 
 def yield_curve_heatmap_figure(df: pd.DataFrame) -> go.Figure:
-    """Heatmap: time x maturity x yield. Real heat — cool to hot."""
+    """Heatmap: time x maturity x yield."""
     weekly = df.resample("W").last() if not df.empty else df
 
     fig = go.Figure(data=go.Heatmap(
@@ -86,13 +87,14 @@ def yield_curve_heatmap_figure(df: pd.DataFrame) -> go.Figure:
         plot_bgcolor=BG_CHART,
         font=_FONT,
         hoverlabel=_HOVERLABEL,
-        title=dict(text="Yield Curve Over Time", font=dict(size=15, color=TEXT_PRIMARY)),
+        title=dict(text="Yield Curve Over Time", font=dict(size=15, color=TEXT_PRIMARY),
+                   x=0.01, xanchor="left", pad=dict(b=10)),
         xaxis=dict(title="Date", gridcolor=GRID_COLOR, linecolor=AXIS_COLOR),
         yaxis=dict(
             title="Maturity",
             categoryorder="array", categoryarray=MATURITY_ORDER,
             gridcolor=GRID_COLOR, linecolor=AXIS_COLOR,
         ),
-        margin=dict(t=55, b=45, l=55, r=25),
+        margin=dict(t=70, b=50, l=60, r=30),
     )
     return fig

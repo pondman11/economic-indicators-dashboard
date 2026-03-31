@@ -54,14 +54,15 @@ def spread_monitor_figure(
         plot_bgcolor=BG_CHART,
         font=_FONT,
         hoverlabel=_HOVERLABEL,
-        title=dict(text="Treasury Yield Spreads", font=dict(size=15, color=TEXT_PRIMARY)),
+        title=dict(text="Treasury Yield Spreads", font=dict(size=15, color=TEXT_PRIMARY),
+                   x=0.01, xanchor="left", pad=dict(b=15)),
         xaxis=dict(title="Date", gridcolor=GRID_COLOR, linecolor=AXIS_COLOR),
         yaxis=dict(title="Spread (%)", gridcolor=GRID_COLOR, linecolor=AXIS_COLOR),
         legend=dict(
-            orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0,
+            orientation="h", yanchor="bottom", y=1.06, xanchor="left", x=0,
             bgcolor="rgba(0,0,0,0)", font=dict(size=11, color=TEXT_SECONDARY),
         ),
-        margin=dict(t=55, b=45, l=55, r=25),
+        margin=dict(t=80, b=50, l=60, r=30),
         hovermode="x unified",
     )
     return fig

@@ -35,8 +35,8 @@ def leading_indicators_figure(
             "Building Permits",
             "10Y - 2Y Spread",
         ],
-        vertical_spacing=0.13,
-        horizontal_spacing=0.07,
+        vertical_spacing=0.15,
+        horizontal_spacing=0.08,
     )
 
     rec_periods = recession_periods(usrec) if not usrec.empty else []
@@ -91,9 +91,10 @@ def leading_indicators_figure(
         paper_bgcolor=BG_SECONDARY,
         plot_bgcolor=BG_CHART,
         font=_FONT,
-        title=dict(text="Leading Economic Indicators", font=dict(size=15, color=TEXT_PRIMARY)),
-        height=620,
-        margin=dict(t=75, b=45, l=55, r=25),
+        title=dict(text="Leading Economic Indicators", font=dict(size=15, color=TEXT_PRIMARY),
+                   x=0.01, xanchor="left", pad=dict(b=10)),
+        height=680,
+        margin=dict(t=90, b=50, l=60, r=30),
         hovermode="x unified",
     )
 
