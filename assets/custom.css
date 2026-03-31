@@ -4,13 +4,26 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* --- Global --- */
+/* --- Force Inter everywhere, kill all italics --- */
+* {
+    font-style: normal !important;
+}
+
+body, body * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
 body {
     background-color: #0f1117 !important;
     color: #e1e4e8 !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
     margin: 0;
     -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: 'Inter', -apple-system, sans-serif !important;
+    font-style: normal !important;
 }
 
 /* --- Header --- */
@@ -21,20 +34,21 @@ body {
 }
 
 .dashboard-header h1 {
-    font-family: 'Inter', sans-serif !important;
-    font-weight: 600;
-    font-size: 1.15rem;
-    color: #f0f3f6;
-    margin: 0;
+    font-weight: 600 !important;
+    font-size: 1.15rem !important;
+    color: #f0f3f6 !important;
+    margin: 0 !important;
     letter-spacing: -0.01em;
+    font-style: normal !important;
 }
 
 .dashboard-header .subtitle {
-    font-size: 0.72rem;
-    color: #7d8590;
+    font-size: 0.72rem !important;
+    color: #7d8590 !important;
     margin-top: 3px;
     letter-spacing: 0.02em;
-    font-weight: 400;
+    font-weight: 400 !important;
+    font-style: normal !important;
 }
 
 /* --- Status bar --- */
@@ -42,12 +56,13 @@ body {
     background-color: #161b22;
     border-bottom: 1px solid #21262d;
     padding: 0.4rem 2.5rem;
-    font-size: 0.68rem;
-    color: #7d8590;
+    font-size: 0.68rem !important;
+    color: #7d8590 !important;
     display: flex;
     gap: 2rem;
-    font-weight: 500;
+    font-weight: 500 !important;
     letter-spacing: 0.02em;
+    font-style: normal !important;
 }
 
 .status-bar .status-item {
@@ -75,19 +90,20 @@ body {
 /* --- Tabs --- */
 .nav-tabs {
     border-bottom: 1px solid #21262d !important;
-    background-color: #161b22;
+    background-color: #161b22 !important;
     padding: 0 2rem;
 }
 
 .nav-tabs .nav-link {
-    font-family: 'Inter', sans-serif !important;
     font-size: 0.78rem !important;
-    font-weight: 500;
+    font-weight: 500 !important;
+    font-style: normal !important;
     color: #7d8590 !important;
     border: none !important;
     padding: 0.75rem 1.25rem !important;
     transition: all 0.15s ease;
     border-bottom: 2px solid transparent !important;
+    background: transparent !important;
 }
 
 .nav-tabs .nav-link:hover {
@@ -100,6 +116,7 @@ body {
     color: #f0f3f6 !important;
     background-color: transparent !important;
     border-bottom: 2px solid #58a6ff !important;
+    font-style: normal !important;
 }
 
 /* --- Cards / Graphs --- */
@@ -121,15 +138,20 @@ body {
 }
 
 .radio-pills .form-check-label {
-    font-family: 'Inter', sans-serif !important;
     font-size: 0.75rem !important;
     font-weight: 500 !important;
+    font-style: normal !important;
     color: #7d8590 !important;
     padding: 0.4rem 1rem !important;
     border-radius: 6px !important;
     cursor: pointer !important;
     transition: all 0.15s ease !important;
     margin: 0 !important;
+    background: transparent !important;
+}
+
+.radio-pills .form-check-label:hover {
+    color: #e1e4e8 !important;
 }
 
 .radio-pills .form-check-input:checked + .form-check-label {
@@ -150,7 +172,8 @@ body {
     background-color: rgba(248, 81, 73, 0.1) !important;
     border: 1px solid rgba(248, 81, 73, 0.3) !important;
     color: #f85149 !important;
-    font-size: 0.85rem;
+    font-size: 0.85rem !important;
+    font-style: normal !important;
     border-radius: 8px !important;
 }
 
@@ -158,7 +181,8 @@ body {
     background-color: rgba(210, 153, 34, 0.1) !important;
     border: 1px solid rgba(210, 153, 34, 0.3) !important;
     color: #d29922 !important;
-    font-size: 0.83rem;
+    font-size: 0.83rem !important;
+    font-style: normal !important;
     border-radius: 8px !important;
 }
 
@@ -174,10 +198,10 @@ body {
 
 /* --- Section labels --- */
 .section-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #7d8590;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    font-style: normal !important;
+    color: #7d8590 !important;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     margin-bottom: 0.5rem;
@@ -196,15 +220,16 @@ body {
 
 /* --- Footer --- */
 .footer-note {
-    font-size: 0.68rem;
-    color: #484f58;
+    font-size: 0.68rem !important;
+    font-style: normal !important;
+    color: #484f58 !important;
     text-align: center;
     padding: 1.5rem 1rem 1rem;
 }
 
 @media (max-width: 768px) {
     .dashboard-header { padding: 1rem 1.5rem; }
-    .dashboard-header h1 { font-size: 1rem; }
+    .dashboard-header h1 { font-size: 1rem !important; }
     .tab-content-area { padding: 1rem 1.5rem; }
     .status-bar { flex-wrap: wrap; gap: 0.5rem 1.5rem; padding: 0.4rem 1.5rem; }
 }
