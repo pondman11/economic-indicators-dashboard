@@ -12,7 +12,24 @@ from __future__ import annotations
 import plotly.graph_objects as go
 import pandas as pd
 
-from config import MATURITY_ORDER, PLOTLY_TEMPLATE, COLORS, CHART_LAYOUT_DEFAULTS
+from config import (
+    MATURITY_ORDER, PLOTLY_TEMPLATE, COLORS,
+    BG_PRIMARY, BG_SECONDARY, GRID_COLOR, TEXT_PRIMARY, TEXT_ACCENT,
+)
+
+
+# Build chart layout defaults inline (avoids kwarg collisions with
+# CHART_LAYOUT_DEFAULTS which contains generic xaxis/yaxis keys).
+_FONT = dict(
+    family="'JetBrains Mono', 'Fira Code', 'SF Mono', monospace",
+    color=TEXT_PRIMARY,
+    size=12,
+)
+_HOVERLABEL = dict(
+    bgcolor="#1a1a2e",
+    font_color=TEXT_PRIMARY,
+    bordercolor=TEXT_ACCENT,
+)
 
 
 def yield_curve_snapshot_figure(
@@ -54,11 +71,14 @@ def yield_curve_snapshot_figure(
         ))
 
     fig.update_layout(
-        **CHART_LAYOUT_DEFAULTS,
         template=PLOTLY_TEMPLATE,
-        title="◆ US TREASURY YIELD CURVE",
-        xaxis_title="Maturity",
-        yaxis_title="Yield (%)",
+        paper_bgcolor=BG_SECONDARY,
+        plot_bgcolor=BG_PRIMARY,
+        font=_FONT,
+        hoverlabel=_HOVERLABEL,
+        title=dict(text="◆ US TREASURY YIELD CURVE", font=dict(color=TEXT_ACCENT, size=16)),
+        xaxis=dict(title="Maturity", gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR),
+        yaxis=dict(title="Yield (%)", gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR),
         legend=dict(
             orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
             bgcolor="rgba(0,0,0,0)", font=dict(size=11),
@@ -77,12 +97,12 @@ def yield_curve_heatmap_figure(df: pd.DataFrame) -> go.Figure:
     burn red/white.
     """
     # Resample to weekly to keep the heatmap performant
-    weekly = df.resample("W").last()
+    weekly = df.resample("W").last() if not df.empty else df
 
     fig = go.Figure(data=go.Heatmap(
-        z=weekly.T.values,
-        x=weekly.index,
-        y=weekly.columns.tolist(),
+        z=weekly.T.values if not weekly.empty else [[]],
+        x=weekly.index if not weekly.empty else [],
+        y=weekly.columns.tolist() if not weekly.empty else [],
         colorscale=[
             [0.0, "#0a0a2e"],
             [0.15, "#1a1a6e"],
@@ -101,14 +121,18 @@ def yield_curve_heatmap_figure(df: pd.DataFrame) -> go.Figure:
     ))
 
     fig.update_layout(
-        **CHART_LAYOUT_DEFAULTS,
         template=PLOTLY_TEMPLATE,
-        title="◆ YIELD CURVE HEATMAP — THERMAL VIEW",
-        xaxis_title="Date",
-        yaxis_title="Maturity",
+        paper_bgcolor=BG_SECONDARY,
+        plot_bgcolor=BG_PRIMARY,
+        font=_FONT,
+        hoverlabel=_HOVERLABEL,
+        title=dict(text="◆ YIELD CURVE HEATMAP — THERMAL VIEW", font=dict(color=TEXT_ACCENT, size=16)),
+        xaxis=dict(title="Date", gridcolor=GRID_COLOR),
         yaxis=dict(
-            categoryorder="array", categoryarray=MATURITY_ORDER,
-            gridcolor="rgba(255,255,255,0.06)",
+            title="Maturity",
+            categoryorder="array",
+            categoryarray=MATURITY_ORDER,
+            gridcolor=GRID_COLOR,
         ),
         margin=dict(t=70, b=50, l=60, r=30),
     )

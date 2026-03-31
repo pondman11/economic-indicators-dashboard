@@ -10,8 +10,22 @@ from __future__ import annotations
 import pandas as pd
 import plotly.graph_objects as go
 
-from config import PLOTLY_TEMPLATE, COLORS, RECESSION_FILL_COLOR, CHART_LAYOUT_DEFAULTS
+from config import (
+    PLOTLY_TEMPLATE, COLORS, RECESSION_FILL_COLOR,
+    BG_PRIMARY, BG_SECONDARY, GRID_COLOR, TEXT_PRIMARY, TEXT_ACCENT,
+)
 from transforms import recession_periods
+
+_FONT = dict(
+    family="'JetBrains Mono', 'Fira Code', 'SF Mono', monospace",
+    color=TEXT_PRIMARY,
+    size=12,
+)
+_HOVERLABEL = dict(
+    bgcolor="#1a1a2e",
+    font_color=TEXT_PRIMARY,
+    bordercolor=TEXT_ACCENT,
+)
 
 
 def spread_monitor_figure(
@@ -66,11 +80,14 @@ def spread_monitor_figure(
     )
 
     fig.update_layout(
-        **CHART_LAYOUT_DEFAULTS,
         template=PLOTLY_TEMPLATE,
-        title="◆ TREASURY YIELD SPREADS — RECESSION MONITOR",
-        xaxis_title="Date",
-        yaxis_title="Spread (%)",
+        paper_bgcolor=BG_SECONDARY,
+        plot_bgcolor=BG_PRIMARY,
+        font=_FONT,
+        hoverlabel=_HOVERLABEL,
+        title=dict(text="◆ TREASURY YIELD SPREADS — RECESSION MONITOR", font=dict(color=TEXT_ACCENT, size=16)),
+        xaxis=dict(title="Date", gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR),
+        yaxis=dict(title="Spread (%)", gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR),
         legend=dict(
             orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
             bgcolor="rgba(0,0,0,0)", font=dict(size=11),
